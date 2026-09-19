@@ -1,0 +1,109 @@
+{
+    "model_name": "Random Forest Ensemble (150 Trees)",
+    "accuracy": 94.79,
+    "roc_auc": 0.9911,
+    "precision": 89.71,
+    "recall": 95.57,
+    "f1_score": 0.9255,
+    "confusion_matrix": [
+        [
+            1499,
+            89
+        ],
+        [
+            36,
+            776
+        ]
+    ],
+    "n_samples": 12000,
+    "feature_importances": [
+        {
+            "feature": "foir_ratio",
+            "importance": 43.03
+        },
+        {
+            "feature": "lti_ratio",
+            "importance": 15.56
+        },
+        {
+            "feature": "credit_score",
+            "importance": 13.05
+        },
+        {
+            "feature": "loan_amount",
+            "importance": 5.71
+        },
+        {
+            "feature": "past_defaults",
+            "importance": 5.29
+        },
+        {
+            "feature": "monthly_income",
+            "importance": 4.27
+        },
+        {
+            "feature": "loan_tenure_months",
+            "importance": 3.08
+        },
+        {
+            "feature": "dti_ratio",
+            "importance": 1.72
+        },
+        {
+            "feature": "coapplicant_income",
+            "importance": 1.46
+        },
+        {
+            "feature": "existing_emi",
+            "importance": 1.37
+        }
+    ],
+    "all_features": [
+        "age",
+        "dependents",
+        "monthly_income",
+        "coapplicant_income",
+        "existing_emi",
+        "loan_amount",
+        "loan_tenure_months",
+        "credit_score",
+        "past_defaults",
+        "credit_inquiries",
+        "dti_ratio",
+        "lti_ratio",
+        "foir_ratio",
+        "marital_status_Married",
+        "marital_status_Single",
+        "education_Graduate",
+        "education_Post-Graduate",
+        "education_Undergraduate",
+        "employment_type_Business",
+        "employment_type_Salaried",
+        "employment_type_Self-Employed",
+        "loan_category_Education",
+        "loan_category_Home",
+        "loan_category_Personal",
+        "loan_category_Vehicle"
+    ],
+    "categorical_features": [
+        "marital_status",
+        "education",
+        "employment_type",
+        "loan_category"
+    ],
+    "numeric_features": [
+        "age",
+        "dependents",
+        "monthly_income",
+        "coapplicant_income",
+        "existing_emi",
+        "loan_amount",
+        "loan_tenure_months",
+        "credit_score",
+        "past_defaults",
+        "credit_inquiries",
+        "dti_ratio",
+        "lti_ratio",
+        "foir_ratio"
+    ]
+}
