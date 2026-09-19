@@ -11,12 +11,24 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       if (token) {
-        try {
-          const res = await api.getMe();
-          setUser(res.data.user);
-        } catch (err) {
-          console.error("Token invalid or expired", err);
-          logout();
+        if (token.startsWith('mock_jwt_token_')) {
+          const role = token.replace('mock_jwt_token_', '');
+          const isAdmin = role === 'admin';
+          const isGuest = role === 'guest';
+          setUser({
+            id: isAdmin ? 1 : (isGuest ? 99 : 2),
+            full_name: isAdmin ? 'System Administrator' : (isGuest ? 'Guest Explorer' : 'Rahul Sharma'),
+            email: `${role}@smartloan.ai`,
+            role: isAdmin ? 'admin' : 'borrower'
+          });
+        } else {
+          try {
+            const res = await api.getMe();
+            setUser(res.data.user);
+          } catch (err) {
+            console.error("Token invalid or expired", err);
+            logout();
+          }
         }
       }
       setLoading(false);
@@ -25,28 +37,87 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await api.login({ email, password });
-    const { access_token, user: userData } = res.data;
-    localStorage.setItem('smartloan_token', access_token);
-    setToken(access_token);
-    setUser(userData);
-    return userData;
+    try {
+      const res = await api.login({ email, password });
+      const { access_token, user: userData } = res.data;
+      localStorage.setItem('smartloan_token', access_token);
+      setToken(access_token);
+      setUser(userData);
+      return userData;
+    } catch (err) {
+      // Offline / GitHub Pages fallback for demo accounts
+      const lowerEmail = (email || '').toLowerCase();
+      if (!err.response || err.message?.includes('Network Error')) {
+        const isAdmin = lowerEmail.includes('admin');
+        const isGuest = lowerEmail.includes('guest');
+        const role = isAdmin ? 'admin' : 'borrower';
+        const demoUser = {
+          id: isAdmin ? 1 : (isGuest ? 99 : 2),
+          full_name: isAdmin ? 'System Administrator' : (isGuest ? 'Guest Explorer' : 'Rahul Sharma'),
+          email: email || `${role}@smartloan.ai`,
+          role
+        };
+        const demoToken = 'mock_jwt_token_' + (isAdmin ? 'admin' : (isGuest ? 'guest' : 'borrower'));
+        localStorage.setItem('smartloan_token', demoToken);
+        setToken(demoToken);
+        setUser(demoUser);
+        return demoUser;
+      }
+      throw err;
+    }
   };
 
   const register = async (formData) => {
-    const res = await api.register(formData);
-    const { access_token, user: userData } = res.data;
-    localStorage.setItem('smartloan_token', access_token);
-    setToken(access_token);
-    setUser(userData);
-    return userData;
+    try {
+      const res = await api.register(formData);
+      const { access_token, user: userData } = res.data;
+      localStorage.setItem('smartloan_token', access_token);
+      setToken(access_token);
+      setUser(userData);
+      return userData;
+    } catch (err) {
+      // Offline / GitHub Pages fallback
+      if (!err.response || err.message?.includes('Network Error')) {
+        const role = formData.role || 'borrower';
+        const demoUser = {
+          id: Date.now(),
+          full_name: formData.full_name || 'New Registered User',
+          email: formData.email,
+          role
+        };
+        const demoToken = 'mock_jwt_token_' + role;
+        localStorage.setItem('smartloan_token', demoToken);
+        setToken(demoToken);
+        setUser(demoUser);
+        return demoUser;
+      }
+      throw err;
+    }
   };
 
   const quickLoginAs = async (role) => {
-    if (role === 'admin') {
-      return login('admin@smartloan.ai', 'Admin@123');
-    } else {
-      return login('borrower@smartloan.ai', 'Borrower@123');
+    try {
+      if (role === 'admin') {
+        return await login('admin@smartloan.ai', 'Admin@123');
+      } else if (role === 'guest') {
+        return await login('guest@smartloan.ai', 'Guest@123');
+      } else {
+        return await login('borrower@smartloan.ai', 'Borrower@123');
+      }
+    } catch (err) {
+      const isAdmin = role === 'admin';
+      const isGuest = role === 'guest';
+      const demoUser = {
+        id: isAdmin ? 1 : (isGuest ? 99 : 2),
+        full_name: isAdmin ? 'System Administrator' : (isGuest ? 'Guest Explorer' : 'Rahul Sharma'),
+        email: `${role}@smartloan.ai`,
+        role: isAdmin ? 'admin' : 'borrower'
+      };
+      const demoToken = 'mock_jwt_token_' + role;
+      localStorage.setItem('smartloan_token', demoToken);
+      setToken(demoToken);
+      setUser(demoUser);
+      return demoUser;
     }
   };
 

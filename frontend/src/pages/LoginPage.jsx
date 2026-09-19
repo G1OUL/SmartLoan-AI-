@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, Lock, Mail, User, Phone, Sparkles, Eye, EyeOff, 
-  ArrowRight, CheckCircle2, Building2, BrainCircuit, KeyRound, AlertCircle, Info 
+  ArrowRight, CheckCircle2, Building2, BrainCircuit, KeyRound, AlertCircle, Info,
+  Globe, ChevronDown, Compass
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const languages = [
+  { code: 'en', label: 'English', native: 'English' },
+  { code: 'hi', label: 'Hindi', native: 'हिन्दी' },
+  { code: 'mr', label: 'Marathi', native: 'मराठी' },
+  { code: 'gu', label: 'Gujarati', native: 'ગુજરાતી' },
+  { code: 'ta', label: 'Tamil', native: 'தமிழ்' }
+];
+
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { login, register, quickLoginAs } = useAuth();
 
   const [isRegisterTab, setIsRegisterTab] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [langDropdown, setLangDropdown] = useState(false);
   
   // Login fields
   const [email, setEmail] = useState('');
@@ -75,38 +87,75 @@ export default function LoginPage() {
       await quickLoginAs(role);
       navigate(role === 'admin' ? '/admin' : '/');
     } catch (err) {
-      setError('Demo authentication failed. Please ensure the backend server is reachable.');
+      setError('Demo authentication failed.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="w-full min-h-screen flex flex-col justify-center px-4 py-8 relative overflow-hidden">
       
       {/* Ambient background glows */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 blur-[130px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 blur-[130px] rounded-full pointer-events-none"></div>
 
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+      {/* Top Bar with Brand & Language Dropdown */}
+      <div className="max-w-5xl w-full mx-auto flex items-center justify-between pb-6 relative z-10">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-400 p-[2px] shadow-lg shadow-blue-500/20">
+            <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center space-x-1.5">
+              <span className="font-extrabold text-xl text-white tracking-tight">SmartLoan</span>
+              <span className="text-xs px-1.5 py-0.5 font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-md">
+                AI
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-400">Intelligent Multi-Bank Underwriting</p>
+          </div>
+        </div>
+
+        {/* Language selector */}
+        <div className="relative">
+          <button
+            onClick={() => setLangDropdown(!langDropdown)}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 hover:border-slate-500 transition-colors"
+          >
+            <Globe className="w-3.5 h-3.5 text-blue-400" />
+            <span>{languages.find((l) => l.code === i18n.language)?.native || 'English'}</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+          </button>
+          {langDropdown && (
+            <div className="absolute right-0 mt-2 w-40 glass-card rounded-xl py-1 shadow-2xl border border-slate-700 divide-y divide-slate-800 z-50">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    i18n.changeLanguage(lang.code);
+                    localStorage.setItem('smartloan_language', lang.code);
+                    setLangDropdown(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-xs flex items-center justify-between hover:bg-blue-600/20 transition-colors ${
+                    i18n.language === lang.code ? 'text-blue-400 font-semibold' : 'text-slate-300'
+                  }`}
+                >
+                  <span>{lang.native}</span>
+                  <span className="text-[10px] text-slate-500 uppercase">{lang.code}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="max-w-5xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
         
         {/* Left Side: Brand Value Proposition & Trust Badges */}
         <div className="lg:col-span-5 space-y-6 text-left hidden lg:block pr-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-400 p-[2px] shadow-xl shadow-blue-500/20">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-emerald-400" />
-              </div>
-            </div>
-            <div>
-              <span className="text-2xl font-black text-white tracking-tight">SmartLoan</span>
-              <span className="ml-1.5 text-xs px-2 py-0.5 font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-md">
-                AI
-              </span>
-              <p className="text-xs text-slate-400">Next-Gen Multi-Bank Underwriting</p>
-            </div>
-          </div>
-
           <h2 className="text-2xl font-extrabold text-white leading-snug">
             Intelligent borrowing with <span className="gradient-text">100% transparency</span> and zero guesswork.
           </h2>
@@ -216,6 +265,16 @@ export default function LoginPage() {
                       <ArrowRight className="w-3.5 h-3.5 text-purple-400 group-hover:translate-x-1 transition-transform" />
                     </div>
                     <p className="text-[10px] text-slate-400 mt-0.5">Admin (Model & bank editor)</p>
+                  </button>
+                </div>
+
+                <div className="text-center pt-1 border-t border-slate-800/60">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemo('guest')}
+                    className="text-[11px] text-slate-400 hover:text-emerald-400 transition-colors inline-flex items-center space-x-1 underline underline-offset-4"
+                  >
+                    <span>Or Continue as Guest Explorer (अतिथि के रूप में सीधे देखें) &rarr;</span>
                   </button>
                 </div>
               </div>
