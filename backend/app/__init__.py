@@ -11,7 +11,7 @@ jwt = JWTManager()
 def create_app(config_class=Config):
     # The combined Render deployment serves the Vite build from the repository root.
     frontend_dist = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..', '..', '..', 'frontend', 'dist')
+        os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'dist')
     )
     app = Flask(__name__, static_folder=None)
     app.config.from_object(config_class)
