@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
+// Build assets with root-relative URLs because Flask serves the app at /.
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [react()],
   server: {
     port: 5173,
